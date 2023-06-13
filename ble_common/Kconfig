@@ -1,0 +1,29 @@
+#
+# Copyright (c) 2021 Laird Connectivity
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+if BT
+
+menu "Laird Connectivity Zephyr BLE Common Components"
+	 default y
+
+config LCZ_BT
+	bool "Enable Bluetooth utility functions"
+
+config LCZ_AD_FIND
+	bool "Enable advertisement parser"
+
+config LCZ_SENSOR_ADV_FORMAT
+	bool "Enable BLE Sensor Advertisement Format Module"
+	depends on LCZ_BT
+
+config LCZ_SENSOR_EVENT
+	bool "Enable sensor event module"
+
+rsource "Kconfig.lcz_bt_scan"
+
+endmenu
+
+endif

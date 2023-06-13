@@ -1,0 +1,60 @@
+#
+# Copyright (c) 2021 Laird Connectivity
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+config LCZ_MEMFAULT
+    bool "Enable Memfault integration"
+	select MEMFAULT
+
+if LCZ_MEMFAULT
+
+config LCZ_MEMFAULT_LOG_LEVEL
+	int "Memfault log level"
+	default 4
+	range 0 4
+
+config LCZ_MEMFAULT_SOFTWARE_TYPE
+	string "Software type"
+	default "firmware"
+
+config LCZ_MEMFAULT_HTTP_TRANSPORT
+	bool "Enable HTTP data transport"
+	select MEMFAULT_HTTP_ENABLE
+
+if LCZ_MEMFAULT_HTTP_TRANSPORT
+
+config LCZ_MEMFAULT_PROJECT_API_KEY
+	string "API key to authentication to memfault"
+	default "lMq1riPv0YbLsfpCiUMfxClU1oLVVjH1"
+
+endif # LCZ_MEMFAULT_HTTP_TRANSPORT
+
+config LCZ_MEMFAULT_MQTT_TRANSPORT
+	bool "Enable MQTT data transport"
+	depends on MQTT_LIB
+
+if LCZ_MEMFAULT_MQTT_TRANSPORT
+
+config LCZ_MEMFAULT_MQTT_TOPIC
+	string "MQTT topic for publishing data"
+	default "prod/%s/%s/memfault/chunk"
+
+config LCZ_MEMFAULT_MQTT_DATA_BUF_LENGTH
+	int "MQTT data buffer length"
+	default 1024
+	help
+	  Determines maximum size of data that can be sent at a time.
+
+config MEMFAULT_TOPIC_MAX_SIZE
+	int "Max topic size for memfault"
+	default 64
+
+endif # LCZ_MEMFAULT_MQTT_TRANSPORT
+
+config LCZ_MEMFAULT_METRICS
+	bool "Enable Memfault metrics tracking"
+	select MEMFAULT_METRICS
+
+endif # LCZ_MEMFAULT

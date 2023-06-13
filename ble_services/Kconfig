@@ -1,0 +1,76 @@
+#
+# Copyright (c) 2020-2021 Laird Connectivity
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+if BT && LCZ_BT
+
+menu "Laird Connectivity Zephyr BLE Services"
+	 default y
+
+config SHA256_SIZE
+	int
+	default 32
+
+config UNIVERSAL_BOOTLOADER_SERVICE
+	bool "Enable Universal Bootloader Service"
+	depends on LAIRDCONNECTIVITY_BLR
+
+config BLE_CELLULAR_SERVICE
+	bool "Enable BLE Cell service"
+
+config BLE_POWER_SERVICE
+	bool "Enable BLE Power Service"
+	select LCZ_POWER
+
+if BLE_POWER_SERVICE
+
+config BLE_POWER_SERVICE_LOG_LEVEL
+	int "BLE Power Service Log level"
+	range 0 4
+	default 3
+
+endif
+
+config BLE_ESS_SERVICE
+	bool "Enable BLE ESS Service"
+
+if BLE_ESS_SERVICE
+
+config BLE_ESS_SERVICE_LOG_LEVEL
+	int "BLE ESS Service Log level"
+	range 0 4
+	default 2
+
+endif
+
+config LCZ_BLE_DIS
+	bool "Enable Custom Device Information BLE service"
+
+config FOTA_SERVICE
+	bool "Enable Firmware Update Over-the-Air Service"
+	depends on FILE_SYSTEM_UTILITIES
+	help
+		This service can be used in conjunction with mcumgr file transfer to update
+		the HL7800 modem.
+
+if FOTA_SERVICE
+
+config FOTA_HASH_SIZE
+	int "Size of the hash in bytes"
+	default SHA256_SIZE
+
+config FOTA_FILE_NAME_MAX_SIZE
+	int "Maximum file name length"
+	default 64
+
+config FOTA_FS_MOUNT
+	string "Default mount for the file system used by FOTA"
+	default "/lfs"
+
+endif
+
+endmenu
+
+endif

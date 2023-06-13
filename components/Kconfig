@@ -1,0 +1,120 @@
+#
+# Copyright (c) 2020 Laird Connectivity
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+menu "Laird Connectivity Zephyr Components"
+	 default y
+
+config LCZ_DNS
+	bool "Wrapper for DNS resolver that provides retries and debug printing"
+	depends on DNS_RESOLVER
+	depends on NET_SOCKETS
+
+config DNS_RESOLVER_ADDR_MAX_SIZE
+	int
+	default 24 if NET_IPV6
+	default 16
+
+config DNS_RETRIES
+    int "Number of times to retry resolving server address"
+	depends on LCZ_DNS
+    default 1
+
+config DNS_RETRY_DELAY_SECONDS
+    int "Number of seconds to wait between resolution attempts"
+	depends on LCZ_DNS
+    default 5
+
+config LCZ_HWREV
+	bool "Enable Hardware Revision ID detection"
+	depends on (BOARD_BT510)
+	help
+		Enable Hardware Revision ID checking.
+
+# Splitting ADC and reset could make dependencies cleaner
+# nothing else in zephyr wraps with CONFIG_REBOOT (mcumgr selects it).
+config LCZ_POWER
+	bool "Controls ADC and reset"
+	select REBOOT
+
+config LCZ_CUSTOM_FATAL_ERROR_HANDLER
+	bool "Custom fatal error handler that resets on fatal error"
+	depends on LCZ_POWER
+	depends on !BT_LL_NRFXLIB_DEFAULT
+
+config LCZ_ADC_SAMPLE_PERIOD
+	int "Number of seconds in between ADC readings"
+	depends on LCZ_POWER
+	default 15
+
+config LCZ_ADC_ALWAYS_SAMPLING
+	bool "Keeps the ADC sampling always active regardless of BLE state"
+	depends on LCZ_POWER
+	default y
+
+config LCZ_NFC
+	bool "Enables NFC Support"
+	select NFC_T2T_NRFXLIB
+	select NFC_NDEF
+	select NFC_NDEF_MSG
+	select NFC_NDEF_RECORD
+	select NFC_NDEF_LE_OOB_REC
+	select NFC_NDEF_LE_OOB_REC_PARSER
+	select NFC_NDEF_TEXT_RECORD
+	select NFC_NDEF_URI_MSG
+	select NFC_NDEF_URI_REC
+	select NFC_NDEF_PARSER
+	select NFC_NDEF_PAYLOAD_TYPE_COMMON
+	select NFC_NDEF_TNEP_RECORD
+
+if LCZ_NFC
+
+config LCZ_NFC_REC1_STR
+	string "NFC Record 1 String"
+	default "https://apps.apple.com/us/app/laird-pinnacle-connect/id1481075861?ls=1"
+
+config LCZ_NFC_REC2_STR
+	string "NFC Record 2 String"
+	default "http://play.google.com/store/apps/details?id=com.lairdconnect.pinnacle.connect"
+
+endif # LCZ_NFC
+
+config LCZ_SOCK
+	bool "Wrapper for single socket"
+	depends on NET_SOCKETS
+	depends on MBEDTLS_DTLS
+
+config LCZ_SOCK_VERBOSE_POLL
+	bool "Enable verbose logging for poll timeouts and wait complete"
+	depends on LCZ_SOCK
+
+config LCZ_SOCK_TIMING
+	bool "Enable verbose logging for poll timeouts and wait complete"
+	depends on LCZ_SOCK
+
+config LCZ_RESET_ON_EXIT
+	bool "Reset when exit is called"
+	depends on REBOOT
+	help
+		Default Zephyr behavior is to wait forever.
+
+config LCZ_SOFTWARE_RESET
+	bool "Enable software reset module (wraps Zephyr reset with a delay)"
+	depends on REBOOT
+
+config LCZ_SOFTWARE_RESET_LOG_LEVEL
+    int "Software Reset module log level"
+	depends on LCZ_SOFTWARE_RESET
+    range 0 4
+    default 3
+
+rsource "Kconfig.lcz_qrtc"
+rsource "Kconfig.lcz_param_file"
+rsource "Kconfig.lcz_led"
+rsource "Kconfig.lcz_pwm_led"
+rsource "Kconfig.lcz_no_init_ram_var"
+rsource "Kconfig.lcz_event_manager"
+
+endmenu
